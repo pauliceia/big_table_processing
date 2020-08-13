@@ -1,5 +1,5 @@
-saida/clean*sample*
-saida/error*sample*
+output/clean*sample*
+output/error*sample*
 
 __pycache__
 .vscode

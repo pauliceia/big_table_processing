@@ -22,7 +22,7 @@ class BigTable():
         self.table_name_to_store_df = table_name_to_store_df
 
         # dataframe `Big Table`
-        self.df_bt = read_csv('entrada/{}'.format(self.path_csv_to_read_df))
+        self.df_bt = read_csv('input/{}'.format(self.path_csv_to_read_df))
         print('\n`{}` file has been read successfully!'.format(self.path_csv_to_read_df))
         self.__print_asterisks()
 
@@ -57,7 +57,7 @@ class BigTable():
         # print('\noriginal dataframe...')
         # print('\nself.df_bt.head(): \n', self.df_bt.head())
         # print('\nself.df_bt.head(): \n', self.df_bt.head()[['initial_date', 'final_date']])
-        print('self.df_bt original length: ', len(self.df_bt))
+        print('Big table dataframe original length: ', len(self.df_bt))
 
     def __database_pre_processing(self):
         # create the function in the database
@@ -166,8 +166,8 @@ class BigTable():
 
     def __save_dfs_as_csv_files(self):
         # save the dataframes in CSV files
-        self.df_bt.to_csv('saida/clean_{}'.format(self.path_csv_to_read_df), index=False)  # original CSV without bad rows
-        self.df_error.to_csv('saida/error_{}'.format(self.path_csv_to_read_df), index=False)  # just the bad rows
+        self.df_bt.to_csv('output/clean_{}'.format(self.path_csv_to_read_df), index=False)  # original CSV without bad rows
+        self.df_error.to_csv('output/error_{}'.format(self.path_csv_to_read_df), index=False)  # just the bad rows
 
         print('CSV files (clean and error) have been created successfully!')
 
