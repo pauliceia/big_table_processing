@@ -14,13 +14,13 @@ $ pyenv install 3.7.1
 Create a Python environment with the Python version above through `pyenv-virtualenv`:
 
 ```
-$ pyenv virtualenv 3.7.1 pauliceia-geocoding
+$ pyenv virtualenv 3.7.1 pauliceia_big_table_processing
 ```
 
 Activate the virtual environment:
 
 ```
-$ pyenv activate pauliceia-geocoding
+$ pyenv activate pauliceia_big_table_processing
 ```
 
 Install the requirements:
@@ -35,12 +35,11 @@ $ pip install -r requirements.txt
 Activate the virtual environment:
 
 ```
-$ pyenv activate pauliceia-geocoding
+$ pyenv activate pauliceia_big_table_processing
 ```
 
 Run `read_table.py` file in order to run the application:
 
 ```
-$ cd scripts/
-$ python read_table.py
+$ python main.py
 ```
