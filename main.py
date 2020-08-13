@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from service import BigTable
+from big_table_processing.service import BigTable
 
 
 # table name to store the dataframe

@@ -3,7 +3,7 @@
 
 from numpy import NaN
 from pandas import DataFrame, read_csv, to_numeric
-from model import engine, execute_file, execute_query
+from big_table_processing.model import engine, execute_file, execute_query
 
 
 class BigTable():
