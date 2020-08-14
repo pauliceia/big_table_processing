@@ -3,6 +3,7 @@
 
 from numpy import NaN
 from pandas import DataFrame, read_csv, to_numeric
+
 from big_table_processing.model import engine, execute_file, execute_query
 
 
