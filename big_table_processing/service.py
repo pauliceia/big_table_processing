@@ -37,7 +37,7 @@ class BigTable():
         }, inplace=True)
 
         # add some columns
-        self.df_bt['cordinate'] = ''
+        self.df_bt['coordinate'] = ''
         self.df_bt['first_day'] = NaN
         self.df_bt['first_month'] = NaN
         self.df_bt['first_year'] = NaN
@@ -48,6 +48,8 @@ class BigTable():
         # fix some columns
         self.df_bt['metre'] = self.df_bt['metre'].str.replace(',', '.').astype(float)
         self.df_bt['number'] = self.df_bt['number'].str.replace(',', '.').astype(float)
+        self.df_bt['initial_date'] = self.df_bt['initial_date'].str.replace(' ', '')
+        self.df_bt['final_date'] = self.df_bt['final_date'].str.replace(' ', '')
 
         # print('\noriginal dataframe...')
         # print('\nself.df_bt.head(): \n', self.df_bt.head())
@@ -156,7 +158,7 @@ class BigTable():
                 result = execute_query(query)
                 result = result.fetchone()
 
-                self.df_bt.at[row.Index, 'cordinate'] = result['saboya_geometry']
+                self.df_bt.at[row.Index, 'coordinate'] = result['saboya_geometry']
 
         print('\nBig table has been processed successfully!')
 

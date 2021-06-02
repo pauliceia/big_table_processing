@@ -1,4 +1,4 @@
-id_street,number,original_n,source,author,date,cordinate,first_day,first_month,first_year,last_day,last_month,last_year
+id_street,number,original_n,source,author,date,coordinate,first_day,first_month,first_year,last_day,last_month,last_year
 78,42.0,42,"Livro de Emplacamento, n.21, p.122",Cintia,8/10/2018,POINT(-46.6439355634494 -23.5436200423457),15.0,5.0,1936.0,,,
 78,55.0,55,"Livro de Emplacamento, n.21, p.122; Livro de Emplacamento, n.17, p.67; Livro de Emplacamento, n.1, p.2",Cintia,8/10/2018,POINT(-46.6439355634494 -23.5436200423457),19.0,9.0,1908.0,14.0,5.0,1936.0
 78,61.0,61,"Livro de Emplacamento, n.1, p.2",Cintia,8/10/2018,POINT(-46.6439355634494 -23.5436200423457),18.0,9.0,1908.0,18.0,9.0,1908.0

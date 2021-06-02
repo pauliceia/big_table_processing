@@ -1,8 +1,8 @@
 ALTER TABLE public.${table_name} ADD COLUMN geom geometry(Point, 4326);
 
-UPDATE public.${table_name} SET geom = ST_SetSRID(cordinate, 4326);
+UPDATE public.${table_name} SET geom = ST_SetSRID(coordinate, 4326);
 
-ALTER TABLE public.${table_name} DROP COLUMN cordinate;
+ALTER TABLE public.${table_name} DROP COLUMN coordinate;
 
 ALTER TABLE public.${table_name} ALTER COLUMN index TYPE integer;
 
