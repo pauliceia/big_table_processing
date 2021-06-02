@@ -4,11 +4,13 @@ from psycopg2 import connect as pg_connect
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from big_table_processing.environment import PGUSER, PGPASSWORD, PGHOST, \
+                                             PGPORT, PGDATABASE
+
 
 # create a sqlalchemy connection in order to execute a simple query
 engine = create_engine(
-    'postgresql+psycopg2://postgres:postgres@localhost:15432/pauliceia'
-    # 'postgresql+psycopg2://postgres:postgres@localhost:4000/pauliceia_test'
+    f'postgresql+psycopg2://{PGUSER}:{PGPASSWORD}@{PGHOST}:{PGPORT}/{PGDATABASE}'
 )
 SYSession = sessionmaker(bind=engine)
 
@@ -16,8 +18,7 @@ SYSession = sessionmaker(bind=engine)
 # create a psycopg2 connection in order to execute SQL file
 def create_pg_connect():
     return pg_connect(
-        host="localhost", database="pauliceia", user="postgres", password="postgres", port=15432
-        # host="localhost", database="pauliceia_test", user="postgres", password="postgres", port=4000
+         user=PGUSER, password=PGPASSWORD, host=PGHOST, port=PGPORT, database=PGDATABASE
     )
 
 
@@ -26,7 +27,6 @@ def execute_query(query):
 
     try:
         result = session.execute(query)
-
         session.commit()
 
         return result
