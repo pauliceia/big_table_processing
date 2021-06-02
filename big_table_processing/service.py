@@ -8,9 +8,13 @@ class BigTable():
 
     __ASTERISKS_NUMBER_TO_PRINT = 100
 
-    def __init__(self, path_csv_to_read_df, table_name_to_store_df):
-        self.path_csv_to_read_df = path_csv_to_read_df
-        self.table_name_to_store_df = table_name_to_store_df
+    def __init__(self, csv_path, table_name):
+        self.csv_path = csv_path
+        self.table_name = table_name
+
+        self.__print_asterisks()
+        print(f'Big Table CSV file path: {self.csv_path}')
+        print(f'Table name that will be used to save the dataframe: {self.table_name}')
 
         self.__read_csv_file()
         self.__df_bt_pre_processing()
@@ -23,8 +27,8 @@ class BigTable():
     def __read_csv_file(self):
         self.__print_asterisks()
         # `Big Table` dataframe
-        self.df_bt = read_csv(f'input/{self.path_csv_to_read_df}')
-        print(f'`{self.path_csv_to_read_df}` file has been read successfully!')
+        self.df_bt = read_csv(f'input/{self.csv_path}')
+        print(f'`{self.csv_path}` file has been read successfully!')
         self.__print_asterisks()
 
     def __df_bt_pre_processing(self):
@@ -175,18 +179,18 @@ class BigTable():
 
     def __save_dfs_as_csv_files(self):
         # save the dataframes in CSV files
-        self.df_bt.to_csv(f'output/clean_{self.path_csv_to_read_df}', index=False)  # original CSV without bad rows
-        self.df_error.to_csv(f'output/error_{self.path_csv_to_read_df}', index=False)  # just the bad rows
+        self.df_bt.to_csv(f'output/clean_{self.csv_path}', index=False)  # original CSV without bad rows
+        self.df_error.to_csv(f'output/error_{self.csv_path}', index=False)  # just the bad rows
 
         print('CSV files (clean and error) have been created successfully!')
 
     def __save_df_bt_in_the_database(self):
         # drop the table if it exists in order to create it again based on the dataframe
-        execute_query(f'DROP TABLE IF EXISTS public.{self.table_name_to_store_df};')
-        print(f'Table `{self.table_name_to_store_df}` has been dropped successfully!')
+        execute_query(f'DROP TABLE IF EXISTS public.{self.table_name};')
+        print(f'Table `{self.table_name}` has been dropped successfully!')
 
-        # save the dataframe in the table `self.table_name_to_store_df` in the database
-        self.df_bt.to_sql(self.table_name_to_store_df, con=engine, schema='public')
+        # save the dataframe in the table `self.table_name` in the database
+        self.df_bt.to_sql(self.table_name, con=engine, schema='public')
 
         print('Big table has been saved in the database successfully!')
 
@@ -194,7 +198,7 @@ class BigTable():
         # execute post processing file
         execute_file(
             'sql/02_post_processing.sql',
-            mapping_template={'table_name': self.table_name_to_store_df}
+            mapping_template={'table_name': self.table_name}
         )
         print('`02_post_processing.sql` file has been executed successfully!')
 
