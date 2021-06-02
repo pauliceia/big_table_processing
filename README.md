@@ -29,6 +29,12 @@ Install the requirements:
 $ pip install -r requirements.txt
 ```
 
+Create the environment variables file and update it with your configurations:
+
+```
+$ cp environment.env.EXAMPLE environment.env
+```
+
 
 ### Run the script
 
@@ -40,8 +46,9 @@ Activate the virtual environment:
 $ pyenv activate pauliceia_big_table_processing
 ```
 
-Run the application:
+Then activate the environment variables and run the application:
 
 ```
-$ python main.py
+$ set -a && source environment.env && set +a && \
+    python main.py
 ```
