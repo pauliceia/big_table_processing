@@ -1,16 +1,14 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from string import Template
 
 from psycopg2 import connect as pg_connect
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 
 # create a sqlalchemy connection in order to execute a simple query
 engine = create_engine(
     'postgresql+psycopg2://postgres:postgres@localhost:15432/pauliceia'
+    # 'postgresql+psycopg2://postgres:postgres@localhost:4000/pauliceia_test'
 )
 SYSession = sessionmaker(bind=engine)
 
@@ -18,7 +16,8 @@ SYSession = sessionmaker(bind=engine)
 # create a psycopg2 connection in order to execute SQL file
 def create_pg_connect():
     return pg_connect(
-        host="localhost",database="pauliceia", user="postgres", password="postgres", port=15432
+        host="localhost", database="pauliceia", user="postgres", password="postgres", port=15432
+        # host="localhost", database="pauliceia_test", user="postgres", password="postgres", port=4000
     )
 
 
@@ -58,6 +57,6 @@ def execute_file(file_name, mapping_template=None):
         pg_connection.rollback()
         raise Exception('Executing query was not possible!')
     finally:
-        if (pg_connection):
+        if pg_connection:
             cursor.close()
             pg_connection.close()
