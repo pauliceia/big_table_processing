@@ -8,13 +8,13 @@ Big Table processing.
 Install a specific Python version using `pyenv`:
 
 ```
-$ pyenv install 3.7.1
+$ pyenv install 3.8.5
 ```
 
 Create a Python environment with the Python version above through `pyenv-virtualenv`:
 
 ```
-$ pyenv virtualenv 3.7.1 pauliceia_big_table_processing
+$ pyenv virtualenv 3.8.5 pauliceia_big_table_processing
 ```
 
 Activate the virtual environment:
@@ -31,6 +31,8 @@ $ pip install -r requirements.txt
 
 
 ### Run the script
+
+Before starting, you need to run a PostgreSQL service with a Pauliceia database.
 
 Activate the virtual environment:
 
