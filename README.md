@@ -40,7 +40,7 @@ Activate the virtual environment:
 $ pyenv activate pauliceia_big_table_processing
 ```
 
-Run `read_table.py` file in order to run the application:
+Run the application:
 
 ```
 $ python main.py
