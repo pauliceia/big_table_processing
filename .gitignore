@@ -1,3 +1,5 @@
+environment.env
+
 output/clean*sample*
 output/error*sample*
 
