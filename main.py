@@ -1,15 +1,8 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
+from big_table_processing.environment import BTP_CSV_PATH, BTP_TABLE_NAME
 from big_table_processing.service import BigTable
 
 
-# table name to store the dataframe
-TABLE_NAME_TO_STORE_DF = 'places_pilot_area2'  # correct table
-# TABLE_NAME_TO_STORE_DF = 'places_pilot_area_test'  # fake table to test
-PATH_CSV_TO_READ_DF = 'TABELAO_2019_12_11.csv'  # original file
-# PATH_CSV_TO_READ_DF = 'TABELAO_2019_12_11_sample_last_656_rows.csv'  # this is a sample file
-
-
-big_table = BigTable(PATH_CSV_TO_READ_DF, TABLE_NAME_TO_STORE_DF)
+big_table = BigTable(BTP_CSV_PATH, BTP_TABLE_NAME)
 big_table.process_me()
