@@ -101,49 +101,64 @@ class BigTable():
 
         return True
 
-    def __process_df_bt(self):
+    def __process_df_bt(self, chunks=500):
         # create a copied dataframe to iterate over it while I remove the records from the original one
         df_bt_copy = self.df_bt.copy()
 
-        for row in df_bt_copy.itertuples():
+        size_df = len(df_bt_copy.index)
 
-            ##################################################
-            # validate the dates
-            ##################################################
+        print(f'Dataframe size: {size_df}')
+        print(f'Chunks to process: {chunks}\n')
 
-            # one date must have a value, if both are NaN, then add it to the error dataframe
-            if row.initial_date is NaN and row.final_date is NaN:
-                self.df_error = self.df_error.append(self.df_bt.loc[[row.Index]])
-                self.df_error.at[row.Index, 'reason'] = 'Initial and final dates are empty.'
-                self.df_bt.drop(row.Index, inplace=True)
-                continue
+        # fill table by chunks
+        for start_slice in range(0, size_df, chunks):
+            end_slice = start_slice + chunks
+            if end_slice > size_df:
+                end_slice = size_df
 
-            # if an error has been found during processing, then go to the next row
-            if not self.__check_dates(row):
-                continue
+            df_by_chunk = df_bt_copy[start_slice:end_slice]
 
-            # if first_year is greater than last_year, then add it to the error dataframe
-            if self.df_bt.at[row.Index, 'first_year'] > self.df_bt.at[row.Index, 'last_year']:
-                self.df_error = self.df_error.append(self.df_bt.loc[[row.Index]])
-                self.df_error.at[row.Index, 'reason'] = 'Initial year is greater than final year.'
-                self.df_bt.drop(row.Index, inplace=True)
-                continue
+            print(f'Processing records from {start_slice} to {end_slice}...')
 
-            ##################################################
-            # calculate the coordinate
-            ##################################################
+            for row in df_by_chunk.itertuples():
 
-            # create the SQL query
-            query = f'SELECT saboya_geometry({row.id_street}, {row.metre}) AS saboya_geometry;'
+                ##################################################
+                # validate the dates
+                ##################################################
 
-            # print(f'{row.Index} - {query}')
+                # one date must have a value, if both are NaN, then add it to the error dataframe
+                if row.initial_date is NaN and row.final_date is NaN:
+                    self.df_error = self.df_error.append(self.df_bt.loc[[row.Index]])
+                    self.df_error.at[row.Index, 'reason'] = 'Initial and final dates are empty.'
+                    self.df_bt.drop(row.Index, inplace=True)
+                    continue
 
-            result = execute_query(query)
-            result = result.fetchone()
+                # if an error has been found during processing, then go to the next row
+                if not self.__check_dates(row):
+                    continue
 
-            self.df_bt.at[row.Index, 'cordinate'] = result['saboya_geometry']
+                # if first_year is greater than last_year, then add it to the error dataframe
+                if self.df_bt.at[row.Index, 'first_year'] > self.df_bt.at[row.Index, 'last_year']:
+                    self.df_error = self.df_error.append(self.df_bt.loc[[row.Index]])
+                    self.df_error.at[row.Index, 'reason'] = 'Initial year is greater than final year.'
+                    self.df_bt.drop(row.Index, inplace=True)
+                    continue
 
-        print('Big table has been processed successfully!')
+                ##################################################
+                # calculate the coordinate
+                ##################################################
+
+                # calculate saboya geometry
+                query = f'SELECT saboya_geometry({row.id_street}, {row.metre}) AS saboya_geometry;'
+
+                # print(f'{row.Index} - {query}')
+
+                result = execute_query(query)
+                result = result.fetchone()
+
+                self.df_bt.at[row.Index, 'cordinate'] = result['saboya_geometry']
+
+        print('\nBig table has been processed successfully!')
 
     def __df_bt_post_processing(self):
         # drop some columns
