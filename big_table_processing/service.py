@@ -1,8 +1,5 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from numpy import NaN
-from pandas import DataFrame, read_csv, to_numeric
+from pandas import DataFrame, read_csv
 
 from big_table_processing.model import engine, execute_file, execute_query
 
@@ -15,11 +12,7 @@ class BigTable():
         self.path_csv_to_read_df = path_csv_to_read_df
         self.table_name_to_store_df = table_name_to_store_df
 
-        # dataframe `Big Table`
-        self.df_bt = read_csv('input/{}'.format(self.path_csv_to_read_df))
-        print('\n`{}` file has been read successfully!'.format(self.path_csv_to_read_df))
-        self.__print_asterisks()
-
+        self.__read_csv_file()
         self.__df_bt_pre_processing()
 
         # create a dataframe to store the rows with some error with the same columns from the original dataframe
@@ -27,11 +20,19 @@ class BigTable():
         # create a column in order to store the error reason
         self.df_error['reason'] = ''
 
+    def __read_csv_file(self):
+        self.__print_asterisks()
+        # `Big Table` dataframe
+        self.df_bt = read_csv(f'input/{self.path_csv_to_read_df}')
+        print(f'`{self.path_csv_to_read_df}` file has been read successfully!')
+        self.__print_asterisks()
+
     def __df_bt_pre_processing(self):
         # rename the columns
         self.df_bt.rename(columns={
-            'id_da rua': 'id_street', 'Id_ponto': 'id_point', 'metragem': 'metre', 'logradouro': 'address',
-            'numero': 'number', 'numero original': 'original_n', 'Data inicial': 'initial_date', 'Data_final': 'final_date',
+            'id_da rua': 'id_street', 'Id_ponto': 'id_point', 'metragem': 'metre',
+            'logradouro': 'address', 'numero': 'number', 'numero original': 'original_n',
+            'Data inicial': 'initial_date', 'Data_final': 'final_date',
             'fonte': 'source', 'autor_da_alimentação': 'author', 'Data': 'date'
         }, inplace=True)
 
@@ -51,16 +52,12 @@ class BigTable():
         # print('\noriginal dataframe...')
         # print('\nself.df_bt.head(): \n', self.df_bt.head())
         # print('\nself.df_bt.head(): \n', self.df_bt.head()[['initial_date', 'final_date']])
-        print('Big table dataframe original length: ', len(self.df_bt))
+        print(f'Big table dataframe original length: {len(self.df_bt.index)}')
 
     def __database_pre_processing(self):
         # create the function in the database
         execute_file('sql/01_saboya_geometry_plsql.sql')
         print('`01_saboya_geometry_plsql.sql` file has been executed successfully!')
-
-        # drop the table if it exists in order to create it again based on the dataframe
-        execute_query('DROP TABLE IF EXISTS public.{};'.format(self.table_name_to_store_df))
-        print('\nTable `{}` has been dropped successfully!'.format(self.table_name_to_store_df))
 
     def __check_dates(self, row):
         """
@@ -137,9 +134,9 @@ class BigTable():
             ##################################################
 
             # create the SQL query
-            query = 'SELECT saboya_geometry({}, {}) AS saboya_geometry;'.format(row.id_street, row.metre)
+            query = f'SELECT saboya_geometry({row.id_street}, {row.metre}) AS saboya_geometry;'
 
-            # print(row.Index, ' - ', query)
+            # print(f'{row.Index} - {query}')
 
             result = execute_query(query)
             result = result.fetchone()
@@ -152,20 +149,25 @@ class BigTable():
         # drop some columns
         self.df_bt.drop(['address', 'metre', 'initial_date', 'final_date', 'id_point'], axis=1, inplace=True)
 
-        print('Big table dataframe - tail(): \n', self.df_bt.tail())
-        print('\nBig table dataframe actual length: ', len(self.df_bt))
+        print('Sample:\n')
+        print(f'Big table dataframe actual length: {len(self.df_bt.index)}')
+        print(f'Big table dataframe - tail(): \n{self.df_bt.tail()}\n')
 
-        print('\n\nBig table error dataframe - tail(): \n', self.df_error.tail())
-        print('\nBig table error dataframe length: ', len(self.df_error))
+        print(f'\nBig table error dataframe length: {len(self.df_error.index)}')
+        print(f'Big table error dataframe - tail(): \n{self.df_error.tail()}\n')
 
     def __save_dfs_as_csv_files(self):
         # save the dataframes in CSV files
-        self.df_bt.to_csv('output/clean_{}'.format(self.path_csv_to_read_df), index=False)  # original CSV without bad rows
-        self.df_error.to_csv('output/error_{}'.format(self.path_csv_to_read_df), index=False)  # just the bad rows
+        self.df_bt.to_csv(f'output/clean_{self.path_csv_to_read_df}', index=False)  # original CSV without bad rows
+        self.df_error.to_csv(f'output/error_{self.path_csv_to_read_df}', index=False)  # just the bad rows
 
         print('CSV files (clean and error) have been created successfully!')
 
     def __save_df_bt_in_the_database(self):
+        # drop the table if it exists in order to create it again based on the dataframe
+        execute_query(f'DROP TABLE IF EXISTS public.{self.table_name_to_store_df};')
+        print(f'Table `{self.table_name_to_store_df}` has been dropped successfully!')
+
         # save the dataframe in the table `self.table_name_to_store_df` in the database
         self.df_bt.to_sql(self.table_name_to_store_df, con=engine, schema='public')
 
@@ -173,7 +175,10 @@ class BigTable():
 
     def __database_post_processing(self):
         # execute post processing file
-        execute_file('sql/02_post_processing.sql', mapping_template={'table_name': self.table_name_to_store_df})
+        execute_file(
+            'sql/02_post_processing.sql',
+            mapping_template={'table_name': self.table_name_to_store_df}
+        )
         print('`02_post_processing.sql` file has been executed successfully!')
 
     def __print_asterisks(self):
