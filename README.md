@@ -50,5 +50,5 @@ Then activate the environment variables and run the application:
 
 ```
 $ set -a && source environment.env && set +a && \
-    python main.py
+    python3 main.py
 ```
