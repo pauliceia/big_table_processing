@@ -1,3 +1,22 @@
+-- Consulta para identificar valores inválidos de id_street na sua tabela
+SELECT DISTINCT t.id_street
+FROM public.${table_name} t
+LEFT JOIN public.streets_pilot_area s ON t.id_street = s.id
+WHERE s.id IS NULL AND t.id_street IS NOT NULL;
+
+-- *** IMPORTANTE: Execute a consulta acima para identificar os valores problemáticos. ***
+
+-- Correção: Remover os registros da sua tabela que possuem valores de id_street inválidos
+DELETE FROM public.${table_name}
+WHERE id_street IN (
+    SELECT t.id_street
+    FROM public.${table_name} t
+    LEFT JOIN public.streets_pilot_area s ON t.id_street = s.id
+    WHERE s.id IS NULL AND t.id_street IS NOT NULL
+);
+
+-- *** Após executar a exclusão dos registros inválidos, prossiga com o restante do script. ***
+
 ALTER TABLE public.${table_name} ADD COLUMN geom geometry(Point, 4326);
 
 UPDATE public.${table_name} SET geom = ST_SetSRID(coordinate, 4326);
@@ -30,7 +49,13 @@ ALTER TABLE public.${table_name} ALTER COLUMN last_month TYPE integer USING last
 
 ALTER TABLE public.${table_name} ALTER COLUMN last_year TYPE integer USING last_year::integer;
 
-ALTER TABLE public.${table_name} ADD CONSTRAINT ${table_name}_constraint_fk_id_street FOREIGN KEY (id_street) REFERENCES public.streets_pilot_area (id) MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE public.${table_name}
+ADD CONSTRAINT ${table_name}_constraint_fk_id_street
+FOREIGN KEY (id_street)
+REFERENCES public.streets_pilot_area (id)
+MATCH SIMPLE
+ON UPDATE CASCADE
+ON DELETE CASCADE;
 
 ALTER TABLE public.${table_name} RENAME index TO id;
 
